@@ -1,4 +1,4 @@
-from .config import parser_config
+from ..config import parser_config
 from datetime import datetime
 
 def validate_data(data) -> tuple[bool, str | None]:
