@@ -1,7 +1,7 @@
 from .config import parser_config
 from datetime import datetime
 
-def validate_data(data):
+def validate_data(data) -> tuple[bool, str | None]:
     """
         Validate the ingested data
         
@@ -20,7 +20,8 @@ def validate_data(data):
             return False, "Last updated date must be in YYYY-MM-DD format."
     return True, None
 
-def ingest_data():
+
+def ingest_data() -> dict:
     """
         Ingest data from the terminal 
         
