@@ -21,16 +21,34 @@ def extract_repo_data(repos_response: dict) -> list:
     for repo in repos_response['items']:
         try:
             extracted_data = {
+                # Identity
                 'title': repo.get('name'),
                 'description': repo.get('description'),
                 'url': repo.get('html_url'),
+                'owner': repo.get('owner', {}).get('login'),
+                'owner_type': repo.get('owner', {}).get('type'),  # "User" vs "Organization"
+
+                # Content signals
                 'topics': repo.get('topics', []),
-                'languages': repo.get('language'),
+                'language': repo.get('language'),
+                'license': repo.get('license', {}).get('name') if repo.get('license') else None,
+                'size_kb': repo.get('size'),
+
+                # Engagement signals (raw numbers — needed for scoring)
+                'stars': repo.get('stargazers_count', 0),
+                'forks': repo.get('forks_count', 0),
+                'open_issues': repo.get('open_issues_count', 0),
+                'watchers': repo.get('watchers_count', 0),
+
+                # Computed score (derived from raw numbers above)
+                'fork_star_ratio': round(
+                    repo.get('forks_count', 0) / repo.get('stargazers_count', 1), 3
+                ) if repo.get('stargazers_count', 0) > 0 else None,
+
+                # URLs for future calls (Phase 2/3)
                 'languages_url': repo.get('languages_url'),
                 'contributors_url': repo.get('contributors_url'),
                 'contents_url': repo.get('contents_url'),
-                'deployment': repo.get('deployments_url', None),  # Assuming 'deployment' is a field in the API response
-                'license': repo.get('license', {}).get('name') if repo.get('license') else None
             }
             extracted_repos.append(extracted_data)
         except (KeyError, TypeError, AttributeError) as e:

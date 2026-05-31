@@ -9,7 +9,6 @@ Coordinates the GitHub data fetching and processing workflow:
 from .query_builder import build_github_query
 from .fetcher import fetch_github_repos
 from .extractor import extract_repo_data
-from .classify_query import classify_query_stack
 
 
 def orchestrate_github_search(search_params: dict) -> list:
