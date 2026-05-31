@@ -11,8 +11,10 @@ def build_github_query(data: dict) -> str:
         Returns:
             str: An optimized GitHub query string for the Search API
     """
+    github_query = f"{' '.join(data.get('stack_qualifiers', []))}"
     
-    github_query = f"{data.get('query', '')}"
+    if data.get('concept_tokens') and len(data['concept_tokens']) > 0:
+        github_query += f" {' '.join(data.get('concept_tokens', []))} in:name,topics,description"
     
     # Add language filter if available
     if 'language' in data and data['language']:
