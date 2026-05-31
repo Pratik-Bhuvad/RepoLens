@@ -1,5 +1,3 @@
-from ..config import DEFAULT_MIN_STARS, DEFAULT_MAX_STARS, DEFAULT_LAST_UPDATED_MONTHS
-
 def build_github_query(data: dict) -> str:
     """
         Build an optimized GitHub query based on the ingested data.
@@ -13,8 +11,8 @@ def build_github_query(data: dict) -> str:
         Returns:
             str: An optimized GitHub query string for the Search API
     """
-    github_query = ""
-    github_query += data.get('query')
+    
+    github_query = f"{data.get('query', '')}"
     
     # Add language filter if available
     if 'language' in data and data['language']:

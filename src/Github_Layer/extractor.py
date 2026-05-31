@@ -1,3 +1,5 @@
+import json
+
 def extract_repo_data(repos_response: dict) -> list:
     """
         Extract specific repository fields from GitHub API response.
@@ -12,18 +14,23 @@ def extract_repo_data(repos_response: dict) -> list:
     """
     extracted_repos = []
     
-    if 'items' not in repos_response:
+    if 'items' not in repos_response or len(repos_response['items']) == 0:
         return extracted_repos
+    
 
     for repo in repos_response['items']:
         try:
             extracted_data = {
                 'title': repo.get('name'),
                 'description': repo.get('description'),
+                'url': repo.get('html_url'),
+                'topics': repo.get('topics', []),
                 'languages': repo.get('language'),
                 'languages_url': repo.get('languages_url'),
                 'contributors_url': repo.get('contributors_url'),
-                'contents_url': repo.get('contents_url')
+                'contents_url': repo.get('contents_url'),
+                'deployment': repo.get('deployments_url', None),  # Assuming 'deployment' is a field in the API response
+                'license': repo.get('license', {}).get('name') if repo.get('license') else None
             }
             extracted_repos.append(extracted_data)
         except (KeyError, TypeError, AttributeError) as e:
