@@ -26,6 +26,8 @@ def build_github_query(data: dict) -> str:
     # Add last updated filter if available
     github_query += f" pushed:>{data.get('last_updated')}"
     
+    github_query += f" fork:false"
+    
     print("Constructed GitHub Query:", github_query)
     
     return github_query.strip()
