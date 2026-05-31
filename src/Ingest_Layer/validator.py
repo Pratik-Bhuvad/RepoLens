@@ -55,15 +55,15 @@ def validate_stars(min_stars: int | None, max_stars: int | None) -> tuple[bool, 
     if min_stars is not None:
         if min_stars < 0:
             return False, "Minimum stars cannot be less than 0."
-        if min_stars > 1000:
-            return False, "Minimum stars cannot be greater than 1000."
+        if min_stars > 10000:
+            return False, "Minimum stars cannot be greater than 10000."
     
     # Check if max_stars is valid
     if max_stars is not None:
         if max_stars < 0:
             return False, "Maximum stars cannot be less than 0."
-        if max_stars > 1000:
-            return False, "Maximum stars cannot be greater than 1000."
+        if max_stars > 10000:
+            return False, "Maximum stars cannot be greater than 10000."
     
     # Check if min_stars < max_stars
     if min_stars is not None and max_stars is not None:

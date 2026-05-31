@@ -8,6 +8,7 @@ load_dotenv()
 DEFAULT_MIN_STARS = int(os.getenv("min_stars", 0))
 DEFAULT_MAX_STARS = int(os.getenv("max_stars", 100))
 DEFAULT_LAST_UPDATED_MONTHS = os.getenv("last_updated_months")
+GITHUB_URL = os.getenv("Github_url", "https://api.github.com/search/repositories")
 
 class CustomParser(argparse.ArgumentParser):
     def error(self, message):
