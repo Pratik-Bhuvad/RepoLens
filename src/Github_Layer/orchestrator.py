@@ -87,10 +87,6 @@ def orchestrate_github_search_with_stats(search_params: dict) -> dict:
     try:
         
         query = search_params.get('query', '')
-        
-        stack_qualifiers, concept_tokens = classify_query_stack(query)
-        search_params['stack_qualifiers'] = stack_qualifiers
-        search_params['concept_tokens'] = concept_tokens
 
         # Step 1: Build optimized query
         github_query = build_github_query(search_params)
