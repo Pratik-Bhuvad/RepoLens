@@ -1,6 +1,6 @@
 import requests
 import time
-from ..config import GITHUB_URL
+from ..config import GITHUB_URL, GITHUB_HEADER as headers
 
 def fetch_github_repos(query: str, page: int, per_page: int) -> dict:
     """
@@ -13,9 +13,6 @@ def fetch_github_repos(query: str, page: int, per_page: int) -> dict:
         Returns:
             dict: A dictionary containing the fetched repositories
     """
-    headers = {
-        'Accept': 'application/vnd.github.v3+json',
-    }
     
     params = {
         'q': query,
