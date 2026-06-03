@@ -5,10 +5,14 @@ import os
 load_dotenv()
 
 # Default values from environment variables or hardcoded defaults
-DEFAULT_MIN_STARS = int(os.getenv("min_stars", 0))
-DEFAULT_MAX_STARS = int(os.getenv("max_stars", 100))
-DEFAULT_LAST_UPDATED_MONTHS = os.getenv("last_updated_months")
+DEFAULT_MIN_STARS = int(os.getenv("DEFAULT_MIN_STARS"))
+DEFAULT_MAX_STARS = int(os.getenv("DEFAULT_MAX_STARS"))
+DEFAULT_LAST_UPDATED_MONTHS = os.getenv("DEFAULT_LAST_UPDATED_MONTHS")
 GITHUB_URL = os.getenv("Github_url", "https://api.github.com/search/repositories")
+GITHUB_HEADER = {
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': f"Bearer {os.getenv('Github_token', '')}"
+}
 
 class CustomParser(argparse.ArgumentParser):
     def error(self, message):
@@ -53,7 +57,6 @@ def parser_config():
     
     parser.add_argument(
         "-ms", "--min-stars",
-        default=DEFAULT_MIN_STARS,
         type=int,
         dest="min_stars",
         help="Filter repositories by minimum number of stars (0-1000, default: 0)."
@@ -61,7 +64,6 @@ def parser_config():
     
     parser.add_argument(
         "-mx", "--max-stars",
-        default=DEFAULT_MAX_STARS,
         type=int,
         dest="max_stars",
         help="Filter repositories by maximum number of stars (0-1000, default: 100)."
