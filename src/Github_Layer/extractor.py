@@ -27,6 +27,7 @@ def extract_repo_data(repos_response: dict) -> list:
                 'url': repo.get('html_url'),
                 'owner': repo.get('owner', {}).get('login'),
                 'owner_type': repo.get('owner', {}).get('type'),  # "User" vs "Organization"
+                'pushed_at': repo.get('pushed_at'),
 
                 # Content signals
                 'topics': repo.get('topics', []),

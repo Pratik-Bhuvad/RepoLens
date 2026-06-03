@@ -26,6 +26,5 @@ def build_github_query(data: dict) -> str:
     
     github_query += f" fork:false"
     
-    print("Constructed GitHub Query:", github_query)
     
     return github_query.strip()
