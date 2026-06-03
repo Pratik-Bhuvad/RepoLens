@@ -68,9 +68,4 @@ def apply_gates(repos: list[dict]) -> tuple[list[dict], list[dict]]:
         else:
             passed_repos.append(repo)   # All gates passed
 
-    # Summary
-    print(f"\n[gate] {len(repos)} in → {len(passed_repos)} passed, {len(dropped_repos)} dropped")
-    for d in dropped_repos:
-        print(f"  ✗ '{d['title']}' failed gate '{d['field']}': {d['reason']}")
-
     return passed_repos, dropped_repos
