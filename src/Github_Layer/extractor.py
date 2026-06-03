@@ -41,11 +41,6 @@ def extract_repo_data(repos_response: dict) -> list:
                 'open_issues': repo.get('open_issues_count', 0),
                 'watchers': repo.get('watchers_count', 0),
 
-                # Computed score (derived from raw numbers above)
-                'fork_star_ratio': round(
-                    repo.get('forks_count', 0) / repo.get('stargazers_count', 1), 3
-                ) if repo.get('stargazers_count', 0) > 0 else None,
-
                 # URLs for future calls (Phase 2/3)
                 'languages_url': repo.get('languages_url'),
                 'contributors_url': repo.get('contributors_url'),
