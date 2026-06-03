@@ -1,136 +1,158 @@
 """
-score_weights.py — Ranker Layer Configuration
-----------------------------------------------
-This file defines HOW repos are scored, not the scoring logic itself.
-The actual computation lives in ranker.py.
- 
-Each weight entry defines:
-    - weight      : relative importance in the final score (all weights sum to 1.0)
-    - enabled     : toggle a signal on/off without deleting config
-    - description : why this signal matters
-    - invert      : True if a LOWER raw value = better score (e.g. fork_star_ratio)
-    - gate        : if True, this field filters repos BEFORE scoring (not a scored field)
-    - gate_min    : minimum allowed value (gate fields only)
-    - gate_max    : maximum allowed value (gate fields only)
+weights.py — Ranker Layer: Weight Configuration
+-------------------------------------------------
+Single source of truth for all scoring constants.
+Nothing is computed here — only configured.
+
+Rules:
+    - All SCORE_WEIGHTS entries must sum to 1.0 (validated by validate_weights.py)
+    - Gates are applied BEFORE scoring — failed repos never reach the scorer
+    - Increase a weight to make that signal matter more in the final rank
 """
- 
+
 # ---------------------------------------------------------------------------
-# GATES — Applied before scoring. Repos outside these bounds are dropped.
-# These fields do NOT contribute to the score.
+# GATES — Hard filters. Repos outside these bounds are dropped before scoring.
+# Gates do NOT contribute to score — they only decide if a repo is evaluated.
 # ---------------------------------------------------------------------------
- 
+
 GATES = {
     "stars": {
-        "enabled": True,
+        "enabled":  True,
         "gate_min": 10,
         "gate_max": 500,
         "description": (
-            "Minimum proves the repo isn't invisible. "
-            "Maximum avoids famous/over-known repos. "
-            "Stars are NOT scored — only used as a gate. "
-            "Scoring stars rewards tutorial creators with large audiences."
+            "Min=10 filters spam/invisible repos. "
+            "Max=500 avoids over-famous repos. "
+            "Stars are NOT scored — scoring stars rewards tutorial creators with large audiences."
         ),
     },
     "size_kb": {
-        "enabled": True,
-        "gate_min": 50,       # Below this = likely a small demo or skeleton
-        "gate_max": 50_000,    # Above this = too large to read and learn from
+        "enabled":  True,
+        "gate_min": 50,
+        "gate_max": 50_000,
         "description": (
-            "Filters out repos that are either too minimal to learn from "
-            "or too large to navigate as a beginner."
+            "Min=50 filters empty skeletons. "
+            "Max=50000 filters repos too large to navigate as a learner."
         ),
     },
 }
- 
- 
+
+
 # ---------------------------------------------------------------------------
-# SCORED FIELDS — These contribute to the final rank score.
-# All weights must sum to 1.0.
+# SCORE WEIGHTS — Weighted signals. Must sum to 1.0.
 # ---------------------------------------------------------------------------
- 
+
 SCORE_WEIGHTS = {
- 
+
     "fork_star_ratio": {
-        "weight": 0.35,
+        "weight":  0.30,
         "enabled": True,
-        "invert": True,
         "description": (
-            "Core tutorial detector. Tutorial repos get forked heavily by students "
-            "following along — real projects get starred more than forked. "
-            "A LOW ratio means more stars per fork = real project signal. "
-            "Invert=True because lower ratio → higher score. "
-            "Minimum of 10 stars required before this ratio is meaningful."
+            "Core tutorial detector. "
+            "Tutorial repos get forked heavily by students following along. "
+            "Real projects get starred more than forked. "
+            "LOW ratio = more stars per fork = real project signal. "
+            "Computed in scorer from raw stars + forks fields."
         ),
-        "minimum_stars_to_apply": 10,
+        # Minimum thresholds before ratio is statistically meaningful
+        # stars=1 forks=1 should NOT give 100% — both must clear floor
+        "min_stars_threshold": 15,
+        "min_forks_threshold": 3,
     },
- 
+
     "open_issues": {
-        "weight": 0.30,
-        "enabled": True,
-        "invert": False,
+        "weight":   0.25,
+        "enabled":  True,
         "description": (
-            "Best underrated signal. Real projects have issues filed because "
-            "real people used them and hit real problems. "
-            "Tutorials rarely have issues — students rewatch the video, not file bugs. "
-            "Sweet spot: 1–20 issues. Cap scoring at 20 to avoid rewarding broken repos."
+            "Real projects have issues filed — real people used them and hit problems. "
+            "Tutorials rarely have issues. Sweet spot: 1–20. "
+            "Cap prevents broken/abandoned repos from scoring high."
         ),
-        "score_cap": 20,       # Issues beyond this don't add more score
-        "zero_penalty": False, # 0 issues = neutral (not penalised) — small repos can be clean
+        "score_cap":    20,    # Issues beyond this add no more score
+        "zero_penalty": False, # 0 issues = neutral, not penalised
     },
- 
+
+    "description_signal": {
+        "weight":  0.20,
+        "enabled": True,
+        "description": (
+            "Scans description text for project vs tutorial vs boilerplate language. "
+            "Project words = positive. Tutorial/boilerplate words = negative. "
+            "No description = neutral 0.5."
+        ),
+        "project_words": [
+            "made using", "built with", "app", "platform",
+            "system", "tool", "manager", "tracker", "dashboard",
+            "marketplace", "portal", "clone", "fullstack", "full-stack",
+        ],
+        "tutorial_words": [
+            "tutorial", "course", "learn how", "guide", "follow along",
+            "step by step", "beginner", "crash course", "series",
+        ],
+        "boilerplate_words": [
+            "boilerplate", "starter", "template", "scaffold",
+            "skeleton", "demo", "example", "sample",
+        ],
+    },
+
     "forks": {
-        "weight": 0.15,
+        "weight":  0.15,
         "enabled": True,
-        "invert": False,
         "description": (
-            "Raw fork count as a secondary engagement signal. "
-            "Used alongside fork_star_ratio, not instead of it. "
-            "Diminishing returns applied — a repo with 200 forks shouldn't "
-            "dominate one with 40 forks. Score is log-scaled in ranker.py."
+            "Raw fork count — secondary engagement signal. "
+            "Log-scaled to apply diminishing returns. "
+            "Used alongside fork_star_ratio, not instead of it."
         ),
-        "scale": "log",        # Hint to ranker.py to apply log scaling
+        "scale":       "log",
+        "log_ceiling": 100,    # log(100) used as normalization ceiling
     },
- 
+
     "license": {
-        "weight": 0.10,
+        "weight":  0.05,
         "enabled": True,
-        "invert": False,
         "description": (
             "A developer who added a license was thinking about others using their code. "
-            "Builder mindset indicator. Absence is neutral — many real beginner "
-            "projects skip licensing. Presence is a small positive signal only."
+            "Builder mindset signal. Absence = neutral. Presence = small bonus."
         ),
-        "bonus_if_present": True,   # Binary: present = bonus, absent = 0 (not penalised)
-        "preferred_licenses": [     # These score higher than generic/no license
+        "bonus_if_present": True,
+        "preferred_licenses": [
             "MIT License",
             "Apache License 2.0",
             "GNU General Public License v3.0",
+            "BSD 2-Clause License",
+            "BSD 3-Clause License",
         ],
     },
- 
+
     "has_topics": {
-        "weight": 0.05,
+        "weight":  0.05,
         "enabled": True,
-        "invert": False,
         "description": (
-            "A developer who tagged their repo thought about discoverability. "
-            "Binary signal — tagged repos get a small bonus. "
-            "Notable: bradtraversy/mern-auth has NO topics despite 350+ stars, "
-            "which correctly reduces its score here."
+            "Developer tagged their repo = thought about discoverability. "
+            "Binary: tagged = bonus, untagged = neutral. "
+            "bradtraversy/mern-auth has NO topics despite 350+ stars — correctly penalised."
         ),
         "bonus_if_present": True,
     },
- 
-    "owner_type": {
-        "weight": 0.05,
-        "enabled": True,
-        "invert": False,
-        "description": (
-            "Organization repos are almost never tutorials. "
-            "A company or open source org maintaining a project is a strong "
-            "real-project signal. Binary: Organization = bonus, User = neutral."
-        ),
-        "bonus_value": "Organization",  # Ranker checks repo['owner_type'] == this
-    },
 }
- 
+
+
+# ---------------------------------------------------------------------------
+# RANKING CONFIG — Controls how ranker.py sorts scored repos.
+# Primary sort: score. Secondary sort: pushed_at date (recency tiebreaker).
+# ---------------------------------------------------------------------------
+
+RANKING_CONFIG = {
+    "primary_sort":   "score",
+    "secondary_sort": "pushed_at",    # ISO date string — used as tiebreaker
+    "score_proximity_threshold": 0.05,  # Repos within this score gap are "tied" → recency decides
+}
+
+
+# ---------------------------------------------------------------------------
+# SELECTOR CONFIG
+# ---------------------------------------------------------------------------
+
+SELECTOR_CONFIG = {
+    "default_top_n": 10,
+}
