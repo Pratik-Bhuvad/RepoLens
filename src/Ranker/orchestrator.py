@@ -30,10 +30,6 @@ def run_ranking_pipeline(repos: list[dict], top_n: int | None = None) -> list[di
         top N repos with score, score_breakdown, rank, and pushed_at attached
     """
 
-    print(f"\n{'='*60}")
-    print(f"[ranker_orchestrator] Pipeline start — {len(repos)} repos received")
-    print(f"{'='*60}")
-
     # Pass 1 — Gate
     passed_repos, dropped_repos = apply_gates(repos)
 
@@ -49,9 +45,5 @@ def run_ranking_pipeline(repos: list[dict], top_n: int | None = None) -> list[di
 
     # Pass 4 — Select
     top_repos = select_top_n(ranked_repos, n=top_n)
-
-    print(f"\n{'='*60}")
-    print(f"[ranker_orchestrator] Done — returning {len(top_repos)} repos")
-    print(f"{'='*60}\n")
 
     return top_repos
