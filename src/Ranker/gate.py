@@ -9,7 +9,7 @@ Input:  list of repo dicts from GitHub Layer
 Output: (passed_repos, dropped_repos)
 """
 
-from weights import GATES
+from .weights import GATES
 
 
 def check_single_gate(repo: dict, field: str, config: dict) -> tuple[bool, str]:

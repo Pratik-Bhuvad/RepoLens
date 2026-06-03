@@ -8,7 +8,7 @@ Usage:
     python validate_weights.py
 """
 
-from weights import SCORE_WEIGHTS, GATES, RANKING_CONFIG, SELECTOR_CONFIG
+from .weights import SCORE_WEIGHTS, GATES, RANKING_CONFIG, SELECTOR_CONFIG
 
 
 def validate_score_weights() -> list[str]:
