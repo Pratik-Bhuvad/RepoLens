@@ -57,7 +57,6 @@ def parser_config():
     
     parser.add_argument(
         "-ms", "--min-stars",
-        default=DEFAULT_MIN_STARS,
         type=int,
         dest="min_stars",
         help="Filter repositories by minimum number of stars (0-1000, default: 0)."
@@ -65,7 +64,6 @@ def parser_config():
     
     parser.add_argument(
         "-mx", "--max-stars",
-        default=DEFAULT_MAX_STARS,
         type=int,
         dest="max_stars",
         help="Filter repositories by maximum number of stars (0-1000, default: 100)."
