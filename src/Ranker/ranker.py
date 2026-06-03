@@ -78,8 +78,5 @@ def rank_repos(repos: list[dict]) -> list[dict]:
 
     for position, repo in enumerate(ranked, start=1):
         repo["rank"] = position
-        
-    for repo in ranked:
-        print(f"  {repo['rank']:>3} — {repo.get('title')} (score={repo.get('score')}, pushed={repo.get('pushed_at', 'unknown')})")
 
     return ranked
