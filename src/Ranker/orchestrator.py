@@ -15,7 +15,7 @@ from .validate_weight import run_all as validate
 from .gate             import apply_gates
 from .scorer           import score_repos
 from .ranker           import rank_repos
-# from .selector         import select_top_n
+from .selector         import select_top_n
 
 
 def run_ranking_pipeline(repos: list[dict], top_n: int | None = None) -> list[dict]:
@@ -48,26 +48,10 @@ def run_ranking_pipeline(repos: list[dict], top_n: int | None = None) -> list[di
     ranked_repos = rank_repos(scored_repos)
 
     # Pass 4 — Select
-    # top_repos = select_top_n(ranked_repos, n=top_n)
+    top_repos = select_top_n(ranked_repos, n=top_n)
 
     print(f"\n{'='*60}")
-    print(f"[ranker_orchestrator] Done — returning {len(ranked_repos)} repos")
+    print(f"[ranker_orchestrator] Done — returning {len(top_repos)} repos")
     print(f"{'='*60}\n")
 
-    return ranked_repos
-from .gate import apply_gates
-
-"""
-ORCHESTRATOR — Main entry point for the ranking process.
-Job: orchestrate the entire ranking pipeline: apply gates, then score.
-Input: list of repo dicts (from GitHub Layer)
-Output: list of scored repo dicts, sorted by final score
-"""
-
-def orchestrate_ranking_pipeline(repos: list[dict]) -> list[dict]:
-    # Step 1: Apply gates to filter out repos that don't meet criteria
-    passed_repos, dropped_repos = apply_gates(repos)
-    
-    print(f"Passed {len(passed_repos)} repos, dropped {len(dropped_repos)} repos based on gates.")
-        
-    return passed_repos
+    return top_repos
