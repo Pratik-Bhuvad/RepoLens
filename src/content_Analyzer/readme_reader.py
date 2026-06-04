@@ -52,6 +52,10 @@ def read_readme(repo:dict, headers: dict) -> dict:
             print(f"  [readme_reader] No README found for '{repo.get('title')}'")
             return {"text": None}
         
+        if response.status_code == 403:
+            print(f"[readme_reader] Rate limit hit when fetching README for ")
+            return {"text": None}
+        
         text = _decode_readme(response.json())
         if not text:
             print(f"  [readme_reader] README found but failed to decode for '{repo.get('title')}'")

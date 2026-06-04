@@ -12,6 +12,7 @@ Output: same list with 'analysis' dict attached to each repo
 
 import requests
 from .readme_reader     import read_readme
+from .tree_extract      import extract_file_tree
 
 
 def analyze_repo(repo: dict, headers: dict) -> dict:
@@ -24,11 +25,12 @@ def analyze_repo(repo: dict, headers: dict) -> dict:
     """
     title = repo.get("title", "unknown")
 
-    # 3 API calls — all independent, no dependency between them
     readme_data = read_readme(repo, headers)       # call 1
+    tree_data  = extract_file_tree(repo, headers) # call 2
    
     return {
-        "readme":  readme_data
+        "readme":  readme_data,
+        "tree":    tree_data
     }
 
 
@@ -48,5 +50,7 @@ def run_analysis_pipeline(repos: list[dict], headers: dict) -> list[dict]:
 
     for i, repo in enumerate(repos, start=1):
         repo["analysis"] = analyze_repo(repo, headers)
+        
+    print(repos[0])
 
     return repos

@@ -13,6 +13,7 @@ GITHUB_HEADER = {
     'Accept': 'application/vnd.github.v3+json',
     'Authorization': f"Bearer {os.getenv('Github_token', '')}"
 }
+GITHUB_TREE_URL_TEMPLATE = f"https://api.github.com/repos/{{owner}}/{{repo}}/git/trees/{{sha}}?recursive=1"
 
 class CustomParser(argparse.ArgumentParser):
     def error(self, message):
