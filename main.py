@@ -3,7 +3,13 @@ import json
 from src.Ingest_Layer.ingestion import ingest_data
 from src.Github_Layer.orchestrator import orchestrate_github_search_with_stats
 from src.Ranker.orchestrator import run_ranking_pipeline
+
 from src.Content_Layer.orchestrator import fetch_content_for_repos
+
+from src.Content_Layer.orchestrator import fetch_content_for_repos
+from src.Analyzer.orchestrator import analyze_repository_content
+
+
 from src.config import GITHUB_HEADER as headers
 
 def main():
@@ -14,11 +20,13 @@ def main():
     
     scored_repos = run_ranking_pipeline(repos.get("repositories", []))
     
-    analyzed_repos = fetch_content_for_repos(scored_repos, headers)
+
+    content_fetched = fetch_content_for_repos(scored_repos, headers)
     
-    for repo in analyzed_repos:
-        with open(f"sample_output/content_fetched/{repo['title']}.txt", "w", encoding="utf-8") as f:
-            f.write(str(repo))
+    analyzed_repos = analyze_repository_content(content_fetched)
+    print(analyzed_repos[1]['understand'])
+    print(analyzed_repos[1]['educational_value'])
+    
 
 if __name__ == "__main__":
     main()
