@@ -83,7 +83,7 @@ SCORE_WEIGHTS = {
         "project_words": [
             "made using", "built with", "app", "platform",
             "system", "tool", "manager", "tracker", "dashboard",
-            "marketplace", "portal", "clone", "fullstack", "full-stack",
+            "marketplace", "portal", "fullstack", "full-stack",
         ],
         "tutorial_words": [
             "tutorial", "course", "learn how", "guide", "follow along",

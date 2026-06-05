@@ -11,7 +11,6 @@ Input:  raw repo list from GitHub Layer
 Output: top N scored + ranked repo dicts
 """
 
-from .validate_weight import run_all as validate
 from .gate             import apply_gates
 from .scorer           import score_repos
 from .ranker           import rank_repos
