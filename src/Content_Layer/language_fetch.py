@@ -29,10 +29,7 @@ def fetch_languages(repo:dict, headers: dict) -> dict:
         response = requests.get(languages_url, headers=headers)
         response.raise_for_status()
         if response.status_code == 200:
-<<<<<<< Updated upstream
             print(response.json())
-=======
->>>>>>> Stashed changes
             return {'languages': response.json()}
         else:
             return {'languages': None}
