@@ -41,7 +41,7 @@ def orchestrate_github_search(search_params: dict) -> list:
         page = 1
         
         # GitHub API has a limit of 1000 results per search (max 10 pages with per_page=100)
-        max_pages = 10
+        max_pages = 4
         
         while page <= max_pages:
             repos_response = fetch_github_repos(github_query, page=page, per_page=per_page)
@@ -98,7 +98,7 @@ def orchestrate_github_search_with_stats(search_params: dict) -> dict:
         total_count = 0
         
         # GitHub API has a limit of 1000 results per search (max 10 pages with per_page=100)
-        max_pages = 10
+        max_pages = 4
         
         while page <= max_pages:
             repos_response = fetch_github_repos(github_query, page=page, per_page=per_page)
