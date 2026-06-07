@@ -13,6 +13,8 @@ from src.Analyzer.orchestrator import analyze_repository_content
 from src.config import GITHUB_HEADER as headers
 
 def main():
+    
+    
     data = ingest_data()
     if not data or data is None:
         return
@@ -23,9 +25,10 @@ def main():
 
     content_fetched = fetch_content_for_repos(scored_repos, headers)
     
-    analyzed_repos = analyze_repository_content(content_fetched)
-    print(analyzed_repos[1]['understand'])
-    print(analyzed_repos[1]['educational_value'])
+    analyzed_repos = analyze_repository_content(content_fetched) 
+    
+    for repo in analyzed_repos:
+        print(f"{repo['owner']}/{repo['title']}: {repo['content_score']:.2f}: Readme Score: {repo['readme_score']:.2f}, Tree Score: {repo['tree_score']:.2f} :: Score:{repo['score']} :: TOPICS: {', '.join(repo.get('topics', []))}", end="\n\n")   
     
 
 if __name__ == "__main__":
