@@ -125,6 +125,34 @@ def _score_has_topics(repo: dict, config: dict) -> float:
     return 1.0 if topics else 0.0
 
 
+def _is_boilerplate_repo(repo: dict, config: dict) -> bool:
+    """
+    Detect if repo is a boilerplate/starter/template repo.
+    Returns True if boilerplate is detected — these repos will be discarded.
+    
+    Checks:
+        - Description contains boilerplate words
+        - Topics tagged as boilerplate
+    """
+    description = repo.get("description") or ""
+    desc_lower = description.lower()
+    
+    boilerplate_words = config.get("boilerplate_words", [])
+    
+    # Check description for boilerplate language
+    for word in boilerplate_words:
+        if word in desc_lower:
+            return True
+    
+    # Check topics for boilerplate tags
+    topics = repo.get("topics", [])
+    for topic in topics:
+        if topic.lower() in boilerplate_words:
+            return True
+    
+    return False
+
+
 # ---------------------------------------------------------------------------
 # Dispatch — field name → scoring function
 # ---------------------------------------------------------------------------
@@ -146,14 +174,27 @@ FIELD_SCORERS = {
 def score_repos(repos: list[dict]) -> list[dict]:
     """
     Score each repo. Adds 'score' and 'score_breakdown' to every repo dict.
+    
+    Boilerplate repos (detected via description or topics) are completely
+    discarded and do NOT appear in the output.
 
     Parameters:
         repos: gated list from gate.py
 
     Returns:
-        same list with score fields attached
+        scored list (excluding all boilerplate repos) with score fields attached
     """
+    boilerplate_config = SCORE_WEIGHTS.get("description_signal", {})
+    
+    # Filter out boilerplate repos completely
+    filtered_repos = []
     for repo in repos:
+        if _is_boilerplate_repo(repo, boilerplate_config):
+            continue  # Discard boilerplate repos entirely
+        filtered_repos.append(repo)
+    
+    # Score remaining repos
+    for repo in filtered_repos:
         total_score = 0.0
         breakdown   = {}
 
@@ -166,6 +207,7 @@ def score_repos(repos: list[dict]) -> list[dict]:
                 continue
 
             raw          = scorer_fn(repo, config)     # 0.0 – 1.0
+            
             weight       = config["weight"]
             contribution = round(raw * weight, 4)
 
@@ -180,4 +222,4 @@ def score_repos(repos: list[dict]) -> list[dict]:
         repo["score"]           = round(total_score, 4)
         repo["score_breakdown"] = breakdown
 
-    return repos
+    return filtered_repos
