@@ -13,6 +13,8 @@ from src.Analyzer.orchestrator import analyze_repository_content
 
 from src.Recommend_Layer.orchestrator import run_recommend_ranking_pipeline
 
+from src.Report.data_presenter import present_recommendations
+
 from src.config import GITHUB_HEADER as headers
 
 def main():
@@ -31,9 +33,7 @@ def main():
     
     final_recommendations_repos = run_recommend_ranking_pipeline(analyzed_repos)
     
-    for repo in final_recommendations_repos:
-        filtered_repo = {k: v for k, v in repo.items() if k not in ('readme_content', 'file_structure')}
-        print(filtered_repo, "\n\n","=" * 50 )
+    present_recommendations(final_recommendations_repos)
 
 
 if __name__ == "__main__":
