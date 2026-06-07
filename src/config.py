@@ -5,9 +5,9 @@ import os
 load_dotenv()
 
 # Default values from environment variables or hardcoded defaults
-DEFAULT_MIN_STARS = int(os.getenv("DEFAULT_MIN_STARS"))
-DEFAULT_MAX_STARS = int(os.getenv("DEFAULT_MAX_STARS"))
-DEFAULT_LAST_UPDATED_MONTHS = os.getenv("DEFAULT_LAST_UPDATED_MONTHS")
+DEFAULT_MIN_STARS = int(os.getenv("DEFAULT_MIN_STARS", "10"))
+DEFAULT_MAX_STARS = int(os.getenv("DEFAULT_MAX_STARS", "1000"))
+DEFAULT_LAST_UPDATED_MONTHS = int(os.getenv("DEFAULT_LAST_UPDATED_MONTHS", "36"))
 GITHUB_URL = os.getenv("Github_url", "https://api.github.com/search/repositories")
 GITHUB_HEADER = {
     'Accept': 'application/vnd.github.v3+json',
