@@ -25,13 +25,14 @@ def analyze_single_repository(repo: dict) -> dict:
     )
 
     content_score = (readme_score + tree_score) / 2
+    
 
     return {
-        "understand": readme_score,
-        "educational_value": tree_score,
         "content_score": content_score,
         "readme_score": readme_score,
         "tree_score": tree_score,
+        "readme_analysis": readme_analysis,
+        "tree_analysis": tree_analysis,
     }
 
 def analyze_repository_content(repos: list[dict]) -> list[dict]:
