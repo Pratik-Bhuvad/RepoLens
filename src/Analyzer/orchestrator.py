@@ -1,26 +1,44 @@
-"""
-Orchestrator module for Analyzing Content of Codebase
-"""
-from .understandbility import analyze_repositories_understandability
-from .educational_value import analyze_repositories_educational_value
+
+from .readme_analyzer import analyze_readme
+from .tree_analyzer import analyze_tree
+from .constant import README_WEIGHTS, TREE_WEIGHTS
+
+
+def analyze_single_repository(repo: dict) -> dict:
+    readme_analysis = analyze_readme(repo.get("readme_content"))
+    tree_analysis = analyze_tree(repo.get("file_structure"))
+
+    readme_score = (
+        readme_analysis["has_purpose"] * README_WEIGHTS["has_purpose"] +
+        readme_analysis["has_installation"] * README_WEIGHTS["has_installation"] +
+        readme_analysis["has_features"] * README_WEIGHTS["has_features"] +
+        readme_analysis["is_live_deployed"] * README_WEIGHTS["is_live_deployed"]
+    )
+
+    tree_score = (
+        tree_analysis["has_src"] * TREE_WEIGHTS["has_src"] +
+        tree_analysis["has_tests"] * TREE_WEIGHTS["has_tests"] +
+        tree_analysis["has_docs"] * TREE_WEIGHTS["has_docs"] +
+        tree_analysis["has_config"] * TREE_WEIGHTS["has_config"] +
+        tree_analysis["has_ci"] * TREE_WEIGHTS["has_ci"] +
+        (tree_analysis["max_depth"] / 10) * TREE_WEIGHTS["depth"]
+    )
+
+    content_score = (readme_score + tree_score) / 2
+
+    return {
+        "understand": readme_score,
+        "educational_value": tree_score,
+        "content_score": content_score,
+        "readme_score": readme_score,
+        "tree_score": tree_score,
+    }
 
 def analyze_repository_content(repos: list[dict]) -> list[dict]:
-    """
-    Orchestrates the analysis of repository content by calling various analysis functions.
     
-    Args:
-        repos: List of repository dictionaries to analyze
-    
-    Returns:
-        List of repositories with added analysis results
-    """
-    # Import analysis functions here to avoid circular imports
-    
-    # Step 1: Analyze understandability for all repositories
-    repos = analyze_repositories_understandability(repos)
-    
-    # Step 2: Analyze educational value for all repositories
-    repos = analyze_repositories_educational_value(repos)
-    
+    for repo in repos:
+        analysis = analyze_single_repository(repo)
+        for key, value in analysis.items():
+            repo[key] = value
+
     return repos
-    
