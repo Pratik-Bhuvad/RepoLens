@@ -219,7 +219,7 @@ def score_repos(repos: list[dict]) -> list[dict]:
 
             total_score += contribution
 
-        repo["score"]           = round(total_score, 4)
-        repo["score_breakdown"] = breakdown
+        repo["stats_score"]           = round(total_score, 4)
+        repo["stats_score_breakdown"] = breakdown
 
     return filtered_repos
