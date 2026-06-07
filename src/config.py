@@ -11,7 +11,7 @@ DEFAULT_LAST_UPDATED_MONTHS = int(os.getenv("DEFAULT_LAST_UPDATED_MONTHS", "36")
 GITHUB_URL = os.getenv("Github_url", "https://api.github.com/search/repositories")
 GITHUB_HEADER = {
     'Accept': 'application/vnd.github.v3+json',
-    'Authorization': f"Bearer {os.getenv('Github_token', '')}"
+    'Authorization': f"Bearer {os.getenv('GITHUB_TOKEN', '')}"
 }
 GITHUB_TREE_URL_TEMPLATE = f"https://api.github.com/repos/{{owner}}/{{repo}}/git/trees/{{sha}}?recursive=1"
 
