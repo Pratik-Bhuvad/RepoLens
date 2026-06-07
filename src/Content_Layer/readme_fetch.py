@@ -73,5 +73,4 @@ def fetch_readme_content(repo: dict, headers: dict) -> dict:
             return {'text': None}
             
     except (requests.RequestException, ValueError) as e:
-        print(f"Error fetching README: {e}")
         return {'text': None}

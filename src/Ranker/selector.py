@@ -27,17 +27,14 @@ def select_top_n(repos: list[dict], n: int | None = None) -> list[dict]:
     top_n = n if n is not None else SELECTOR_CONFIG.get("default_top_n", 5)
 
     if not repos:
-        print("[selector] No repos to select from.")
         return []
 
     if top_n <= 0:
-        print(f"[selector] Invalid n={top_n}. Must be > 0.")
         return []
 
     selected = repos[:top_n]
     total    = len(repos)
 
-    print(f"\n[selector] Selected top {len(selected)} from {total} ranked repos")
 
     if total < top_n:
         print(f"  Note: requested {top_n} but only {total} available after gating + scoring")
