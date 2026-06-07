@@ -51,18 +51,13 @@ def fetch_readme_content(repo: dict, headers: dict) -> dict:
     Returns:
         dict : The updated repository dictionary with 'readme_content' field added, or None if fetching fails.
     """
-    contents_url = repo.get('contents_url')
-    if not contents_url:
-        return {'text': None}
+    owner = repo.get('owner', {})
+    title = repo.get('title', 'unknown')
     
-    readme_url = contents_url.replace('{+path}', 'README.md')
+    readme_url = f"https://api.github.com/repos/{owner}/{title}/readme"
+    
     try:
         response = requests.get(readme_url, headers=headers, timeout=10)
-        
-        # If README.md is not found, try readme.md (case-insensitive)
-        if response.status_code == 404:
-            readme_url = contents_url.replace('{+path}', 'readme.md')
-            response = requests.get(readme_url, headers=headers, timeout=10)
             
         response.raise_for_status()
         data = response.json()
