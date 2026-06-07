@@ -5,9 +5,6 @@ FROM python:3.10-slim
 LABEL maintainer="yourname@email.com"
 LABEL version="1.0"
 
-ARG GITHUB_TOKEN
-ENV GITHUB_TOKEN=$GITHUB_TOKEN
-
 # ── Security: don't run as root ─────────────────────────────
 RUN useradd --create-home appuser
 
